@@ -15,6 +15,20 @@ var config = require('./config'),
 	engine = require('./service/engine'),
 	cache = require('./service/cache');
 
+/*var spawn = require('child_process').spawn,
+	py = spawn('python', ['ngrams.py']),
+	data = [1, 2, 4],
+	dataString = '';
+
+py.stdout.on('data', function(data) {
+	dataString += data.toString();
+});
+py.stdout.on('end', function() {
+	console.log(dataString);
+});
+py.stdin.write(JSON.stringify(data));
+py.stdin.end();*/
+
 // create express app
 var app = module.exports = express();
 
@@ -78,12 +92,19 @@ app.server.listen(app.config.port, function() {
 	console.log('App listening on port ' + config.port);
 	fs.writeFile(__dirname + '/start.log', 'started');
 
+	engine.findReferencesFromSong(app, cache, 1);
+	// require('./service/ngrams').get([1,2,3]);
+	// require('./service/ngrams').get([4,5,6]);
+
 	// reset();
 	// cache.getSong(app, 1000, function(song) { console.log(song);});
 	// cache.reset(app);
 	// cache.testit(app);
 	// engine.findReferences(app, cache, "how could you be so heartless");
 	// engine.findReferences(app, cache, "face it");
-	cache.fetchSongs(app, 0, 10);
+	// cache.fetchSongs(app, 0, 10);
 	// cache.printSongs(app);
+
+	// py.stdin.write(JSON.stringify([5,5,7]));
+	// py.stdin.end();
 });

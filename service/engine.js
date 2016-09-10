@@ -1,5 +1,7 @@
 'use strict';
 
+var ngrams = require('./ngrams');
+
 var engine = {
 
 	findReferences: function(app, cache, phrase) {
@@ -13,6 +15,20 @@ var engine = {
 			for (var i = 0; i < matches.length; i++) {
 				console.log((i+1) + ': ' + matches[i].title + ' by ' + matches[i].artistName);
 			}
+		});
+	},
+
+	findReferencesFromSong: function(app, cache, songId) {
+		cache.getSong(app, songId, function(song) {
+			
+			if (!song) {
+				console.log("no song with id " + songId + " was found");
+				return;
+			}
+
+			ngrams.get(song.songLyrics, function(n) {
+				console.log(n);
+			});
 		});
 	}
 };
