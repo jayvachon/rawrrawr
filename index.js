@@ -7,8 +7,6 @@ var config = require('./config'),
 	bodyParser = require('body-parser'),
 	methodOverride = require('method-override'),
 	path = require('path'),
-	// passport = require('passport'),
-	// OAuth2Strategy = require('passport-oauth2'),
 	morgan = require('morgan'),
 	cors = require('cors'),
 	fs = require('fs'),
@@ -49,28 +47,12 @@ require('./models')(app, mongoose);
 app.disable('x-powered-by');
 app.set('port', config.port);
 
-/*passport.use(new OAuth2Strategy({
-    authorizationURL: 'https://api.genius.com/oauth/authorize',
-    tokenURL: 'https://api.genius.com/oauth2/token',
-    clientID: config.genius.id,
-    clientSecret: config.genius.secret,
-    callbackURL: 'http://localhost:8000/auth/callback'
-  },
-  function(accessToken, refreshToken, profile, cb) {
-  	console.log("heard");
-    User.findOrCreate({ exampleId: profile.id }, function (err, user) {
-      return cb(err, user);
-    });
-  }
-));*/
-
 // middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 app.use(methodOverride('X-HTTP-Method-Override'));
-// app.use(passport.initialize());
 app.use(morgan('dev'));
 app.use(cors());
 app.use(require('./service/http').http500);
