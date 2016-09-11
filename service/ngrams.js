@@ -6,10 +6,10 @@ var cp = require('child_process');
 
 var ngrams =  {
 
-	get: function(lyrics, cb) {
+	getLyrics: function(lyrics, cb) {
 
 		var spawn = cp.spawn,
-			py = spawn('python', ['ngrams.py']),
+			py = spawn('python', ['ngrams.py', '--lyrics']),
 			dataString = '';
 
 		py.stdout.on('data', function(lyrics) {
@@ -22,6 +22,10 @@ var ngrams =  {
 		py.stdin.write(JSON.stringify(lyrics));
 		py.stdin.end();
 	}
+
+	/*getSongs: function(songs, cb) {
+
+	}*/
 }
 
 module.exports = ngrams;

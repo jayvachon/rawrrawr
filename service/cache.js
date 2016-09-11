@@ -14,7 +14,7 @@ var cache = {
 				return;
 			}
 			console.log('cache reset');
-			cb();
+			if (cb) cb();
 		})
 	},
 
@@ -39,7 +39,7 @@ var cache = {
 	getSong: function(app, songId, cb) {
 
 		var log = function(msg) {
-			// console.log(msg);
+			console.log(msg);
 		}
 
 		// search for the song
@@ -123,7 +123,7 @@ var cache = {
 	},
 
 	fetchSongs: function(app, startIndex, endIndex) {
-		
+
 		if (!startIndex) startIndex = 0;
 		if (!endIndex) endIndex = 1000;
 
@@ -135,7 +135,7 @@ var cache = {
 		that.asyncLoop({
 		    length : totalCount,
 		    functionToLoop : function(loop, i){
-		    	that.getSong(app, i, function(song) {
+		    	that.getSong(app, i+startIndex, function(song) {
 		    		counter ++;
 		    		var title = '';
 		    		if (song)

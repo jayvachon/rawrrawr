@@ -13,7 +13,8 @@ var config = require('./config'),
 	request = require('request'),
 	cheerio = require('cheerio'),
 	engine = require('./service/engine'),
-	cache = require('./service/cache');
+	cache = require('./service/cache'),
+	argv = require('minimist')(process.argv.slice(2));
 
 /*var spawn = require('child_process').spawn,
 	py = spawn('python', ['ngrams.py']),
@@ -92,19 +93,32 @@ app.server.listen(app.config.port, function() {
 	console.log('App listening on port ' + config.port);
 	fs.writeFile(__dirname + '/start.log', 'started');
 
-	// engine.findReferencesFromSong(app, cache, 1);
-	// require('./service/ngrams').get([1,2,3]);
-	// require('./service/ngrams').get([4,5,6]);
+	// fetch songs
+	if (argv.f) {
+		var from = argv.f,
+			to = argv._[0];
+		console.log("fetch songs from " + from + " to " + to);
+		cache.fetchSongs(app, from, to);
+	}
+	
+	// reset cache
+	if (argv.r) {
+		cache.reset(app);
+	}
 
-	// reset();
-	// cache.getSong(app, 1000, function(song) { console.log(song);});
-	// cache.reset(app);
-	// cache.testit(app);
-	// engine.findReferences(app, cache, "how could you be so heartless");
-	// engine.findReferences(app, cache, "face it");
-	cache.fetchSongs(app, 12, 20);
-	// cache.printSongs(app);
+	if (argv.p) {
+		cache.printSongs(app);
+	}
 
-	// py.stdin.write(JSON.stringify([5,5,7]));
-	// py.stdin.end();
+	if (argv.s) {
+		engine.findReferencesFromSong(app, cache, argv.r);
+
+		// TODO: check if value is string, and if so process it as a reference
+		// engine.findReferences(app, cache, "how could you be so heartless");
+		// engine.findReferences(app, cache, "face it");
+	}
+
+	if (argv.l) {
+		engine.processLyrics(app, cache, 1);
+	}
 });

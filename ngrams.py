@@ -1,34 +1,79 @@
-import sys, json, nltk, string
+import sys, json, nltk, string, argparse
 from nltk import ngrams
+
+min_ngram = 3 # minimum word string to search for
+max_ngram = 6 # maximum word string to search for
+ngram_lists = [i+min_ngram for i in xrange(max_ngram-min_ngram+1)] # array of ngram lengths
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--songs', nargs='*')
+parser.add_argument('--lyrics')
 
 def read_in():
 	lines = sys.stdin.readlines()
 	return json.loads(lines[0])
 
 def main(argv):
-	if argv:
-		process(argv[0])
+	try:
+		process_type = argv[0]
+		data = argv[1:]
+
+		if '--lyrics' in process_type:
+			# print 'LYRICS: ' + lyrics
+			print process_lyrics(data if data else read_in())
+		if '--songs' in process_type:
+			# print 'SONGS:'
+			# print songs
+			print process_songs(data if data else read_in())
 		sys.exit(1)
-	else:
-		process(read_in())
+	except Exception, e:
+		return 'python error: ' + str(e)
 
-def process(lyrics):
+'''
+Takes a string
+'''
+def process_lyrics(lyrics):
 
-	# remove punctuation
-	lyrics = lyrics.translate(None, string.punctuation)
+	try:
+		lyrics = str(lyrics)
 
-	min_ngram = 4
-	max_ngram = 6
+		# remove punctuation
+		lyrics = lyrics.translate(None, string.punctuation)
+		all_ngrams = []
 
-	ngram_lists = [i+min_ngram for i in xrange(max_ngram-min_ngram+1)]
-	
-	all_ngrams = []
+		for n in ngram_lists:
+			grams = ngrams(lyrics.split(), n)
+			all_ngrams.append([' '.join(gram) for gram in grams])
 
-	for n in ngram_lists:
-		grams = ngrams(lyrics.split(), n)
-		all_ngrams.append({ n: [list(gram) for gram in grams] })
+		# print all_ngrams
+		return all_ngrams
 
-	print all_ngrams
+	except Exception, e:
+		return 'python error: ' + str(e)
+'''
+Takes an array of strings
+'''
+def process_songs(songs):
+
+	# TODO: input should be like this:
+	# first song (index = 0) is song to compare
+	# all other songs are indexed at their id + 1
+	# (excluding the song to compare) - that element should be = ''
+
+	try:
+		song = songs.pop(0)
+		lyrics = process_lyrics(song)
+		matches = []
+
+		for idx, song in enumerate(songs):
+			compare_lyrics = process_lyrics(song)
+			matches.append([])
+			for i in xrange(0, len(ngram_lists)):
+				matches[idx].append(list(set(lyrics[i]).intersection(set(compare_lyrics[i]))))
+
+		return matches
+	except Exception, e:
+		return 'python error: ' + str(e)
 
 if __name__ == '__main__':
 	main(sys.argv[1:])

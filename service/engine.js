@@ -26,10 +26,25 @@ var engine = {
 				return;
 			}
 
-			ngrams.get(song.songLyrics, function(n) {
+			ngrams.getSongs(song.songLyrics, function(n) {
 				console.log(n);
 			});
 		});
+	},
+
+	processLyrics: function(app, cache, songId) {
+		cache.getSong(app, songId, function(song) {
+			if (!song) {
+				console.log("no song with id " + songId + " was found");
+				return;
+			}
+
+			// console.log(song.songLyrics);
+
+			ngrams.getLyrics(song.songLyrics, function(n) {
+				console.log(n);
+			});
+		})
 	}
 };
 
