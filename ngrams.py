@@ -14,6 +14,7 @@ def main(argv):
 
 def process(lyrics):
 
+	# remove punctuation
 	lyrics = lyrics.translate(None, string.punctuation)
 
 	min_ngram = 4
@@ -21,14 +22,13 @@ def process(lyrics):
 
 	ngram_lists = [i+min_ngram for i in xrange(max_ngram-min_ngram+1)]
 	
-	# TODO: create list of ngrams between min and max and send out array of ngrams
+	all_ngrams = []
 
-	n = 4
-	grams = ngrams(lyrics.split(), n)
-	out = []
-	for gram in grams:
-		out.append(gram)
-	print json.dumps(out)
+	for n in ngram_lists:
+		grams = ngrams(lyrics.split(), n)
+		all_ngrams.append({ n: [list(gram) for gram in grams] })
+
+	print all_ngrams
 
 if __name__ == '__main__':
 	main(sys.argv[1:])
