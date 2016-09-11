@@ -92,7 +92,7 @@ app.server.listen(app.config.port, function() {
 	console.log('App listening on port ' + config.port);
 	fs.writeFile(__dirname + '/start.log', 'started');
 
-	engine.findReferencesFromSong(app, cache, 1);
+	// engine.findReferencesFromSong(app, cache, 1);
 	// require('./service/ngrams').get([1,2,3]);
 	// require('./service/ngrams').get([4,5,6]);
 
@@ -102,7 +102,7 @@ app.server.listen(app.config.port, function() {
 	// cache.testit(app);
 	// engine.findReferences(app, cache, "how could you be so heartless");
 	// engine.findReferences(app, cache, "face it");
-	// cache.fetchSongs(app, 0, 10);
+	cache.fetchSongs(app, 12, 20);
 	// cache.printSongs(app);
 
 	// py.stdin.write(JSON.stringify([5,5,7]));

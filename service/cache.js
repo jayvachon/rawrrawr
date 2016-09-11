@@ -110,22 +110,44 @@ var cache = {
 		});
 	},
 
+
+	asyncLoop: function(o){
+	    var i=-1;
+
+	    var loop = function(){
+	        i++;
+	        if(i==o.length){o.callback(); return;}
+	        o.functionToLoop(loop, i);
+	    } 
+	    loop();//init
+	},
+
 	fetchSongs: function(app, startIndex, endIndex) {
+		
 		if (!startIndex) startIndex = 0;
 		if (!endIndex) endIndex = 1000;
-		// this.getSong(app, 520, function() {});
+
 		var counter = 0;
 		var totalCount = endIndex-startIndex;
 
-		for (var i = startIndex; i < endIndex; i++) {
-			this.getSong(app, i, function(song) {
-				counter ++;
-				var title = '';
-				if (song)
-					title = song.title + ' by ' + song.artistName;
-				console.log((counter/totalCount*100) + "% " + title);
-			});
-		}
+		var that = this;
+
+		that.asyncLoop({
+		    length : totalCount,
+		    functionToLoop : function(loop, i){
+		    	that.getSong(app, i, function(song) {
+		    		counter ++;
+		    		var title = '';
+		    		if (song)
+		    			title = song.title + ' by ' + song.artistName;
+		    		console.log((counter/totalCount*100) + "% " + title);
+		    		loop();
+		    	});
+		    },
+		    callback : function(){
+		        console.log('finished :)');
+		    }    
+		});
 	}
 };
 

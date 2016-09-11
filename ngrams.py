@@ -19,6 +19,8 @@ def process(lyrics):
 	min_ngram = 4
 	max_ngram = 6
 
+	ngram_lists = [i+min_ngram for i in xrange(max_ngram-min_ngram+1)]
+	
 	# TODO: create list of ngrams between min and max and send out array of ngrams
 
 	n = 4
