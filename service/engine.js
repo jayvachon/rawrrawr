@@ -1,6 +1,7 @@
 'use strict';
 
 var ngrams = require('./ngrams');
+var _ = require('lodash');
 
 var engine = {
 
@@ -42,6 +43,18 @@ var engine = {
 			// console.log(song.songLyrics);
 
 			ngrams.getLyrics(song.songLyrics, function(n) {
+				console.log(n);
+			});
+		})
+	},
+
+	processSongs: function(app, cache, songIds) {
+		cache.getSongs(app, songIds, function(songs) {
+			if (!songs) {
+				console.log('no songs were found');
+				return;
+			}
+			ngrams.getSongs(_.map(songs, function(n) { return n.songLyrics; }), function(n) {
 				console.log(n);
 			});
 		})

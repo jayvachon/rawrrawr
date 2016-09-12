@@ -28,6 +28,16 @@ var cache = {
 		});
 	},
 
+	getSongs: function(app, songIds, cb) {
+		app.db.models.Song.find({ songId: { $in: songIds } }).exec(function(err, songs) {
+			if (err) {
+				console.log(err);
+				return;
+			}
+			cb(songs);
+		});
+	},
+
 	printSongs: function(app, cd) {
 		this.getAllSongs(app, function(songs) {
 			for (var i = 0; i < songs.length; i++) {

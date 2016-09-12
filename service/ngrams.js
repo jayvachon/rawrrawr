@@ -7,25 +7,33 @@ var cp = require('child_process');
 var ngrams =  {
 
 	getLyrics: function(lyrics, cb) {
-
-		var spawn = cp.spawn,
-			py = spawn('python', ['ngrams.py', '--lyrics']),
-			dataString = '';
-
-		py.stdout.on('data', function(lyrics) {
-			dataString += lyrics.toString();
+		this.sendData(lyrics, 'lyrics', function(data) {
+			console.log(data);
 		});
-		py.stdout.on('end', function() {
-			console.log('END');
-			cb(dataString);
-		});
-		py.stdin.write(JSON.stringify(lyrics));
-		py.stdin.end();
 	}
 
-	/*getSongs: function(songs, cb) {
+	getSongs: function(songs, cb) {
+		this.sendData(songs, 'songs', function(data) {
+			console.log(data);
+		});
+	},
 
-	}*/
+	sendData: function(data, arg, cb) {
+
+		var spawn = cp.spawn,
+			py = spawn('python', ['ngrams.py', '--' + arg]),
+			dataString = '';
+
+		py.stdout.on('data', function(data) {
+			dataString += data.toString();
+		});
+		py.stdout.on('end', function() {
+			// console.log('END');
+			cb(dataString);
+		});
+		py.stdin.write(JSON.stringify(data));
+		py.stdin.end();
+	}
 }
 
 module.exports = ngrams;
