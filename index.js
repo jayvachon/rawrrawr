@@ -102,9 +102,9 @@ app.server.listen(app.config.port, function() {
 	}
 	
 	// reset cache
-	if (argv.r) {
+	/*if (argv.r) {
 		cache.reset(app);
-	}
+	}*/
 
 	if (argv.p) {
 		cache.printSongs(app);
@@ -124,5 +124,9 @@ app.server.listen(app.config.port, function() {
 
 	if (argv.k) {
 		engine.processSongs(app, cache, 1)
+	}
+
+	if (argv.r) {
+		engine.processSongs(app, cache, 'Scenario');
 	}
 });

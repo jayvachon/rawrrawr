@@ -1,4 +1,4 @@
-import sys, json, nltk, string, argparse
+import sys, json, nltk, string, argparse, re
 from nltk import ngrams
 
 min_ngram = 4 # minimum word string to search for
@@ -20,7 +20,7 @@ def main(argv):
 
 		if '--lyrics' in process_type:
 			# print 'LYRICS: ' + lyrics
-			print process_lyrics(data if data else read_in())
+			print process_lyrics(data[0] if data else read_in())
 		if '--songs' in process_type:
 			# print 'SONGS:'
 			# print songs
@@ -28,6 +28,16 @@ def main(argv):
 		sys.exit(1)
 	except Exception, e:
 		return 'python error: ' + str(e)
+
+def cleanup_lyrics(lyrics):
+
+	# remove section headers
+	lyrics = re.sub('\[[^\]]*\]', '', lyrics)
+
+	# remove punctuation
+	lyrics = lyrics.translate(None, string.punctuation)
+
+	return lyrics
 
 '''
 Takes a string
@@ -37,8 +47,7 @@ def process_lyrics(lyrics):
 	try:
 		lyrics = str(lyrics)
 
-		# remove punctuation
-		lyrics = lyrics.translate(None, string.punctuation)
+		lyrics = cleanup_lyrics(lyrics)
 		all_ngrams = []
 
 		for n in ngram_lists:

@@ -3,6 +3,10 @@
 var request = require('request');
 var cheerio = require('cheerio');
 
+var buildUrl = function(app, path, term) {
+	return 'http://api.genius.com/' + path + '/' + term + '?access_token=' + app.config.genius.token;
+};
+
 var cache = {
 
 	// TODO: check date created and update song if X amount of time has elapsed
@@ -47,6 +51,18 @@ var cache = {
 		});
 	},
 
+	searchSong: function(app, term, cb) {
+		request(buildUrl(app, 'search', term), function(err, response, body) {
+			response = JSON.parse(body).response;
+			if (!response) {
+				console.log('no song was found using the search term ' + term);
+				return cb(null);
+			}
+			console.log(reponse);
+			// getSong(app, )
+		});
+	},
+
 	getSong: function(app, songId, cb) {
 
 		var log = function(msg) {
@@ -68,14 +84,15 @@ var cache = {
 
 			// otherwise, call the api and scrape the lyrics
 			log("requesting song...");
-			request('http://api.genius.com/songs/' + songId + '?access_token=' + app.config.genius.token, function(err, response, body) {
+			// request('http://api.genius.com/songs/' + songId + '?access_token=' + app.config.genius.token, function(err, response, body) {
+			request(buildUrl(app, 'songs', songId), function(err, response, body) {
 				
 				if (err) {
 					log('request error:' + err);
 					return cb(null);
 				}
 				
-				var response = JSON.parse(body).response;
+				response = JSON.parse(body).response;
 				if (!response) {
 					log("no song with id " + songId);
 
@@ -89,44 +106,46 @@ var cache = {
 						}
 						return cb(null);
 					});
-				}
+				} else {
 
-				var song = response.song;
-				if (!song) {
-					log("no song with id " + songId);
-					return cb(null);
-				}
-
-				// scrape lyrics
-				log("scraping lyrics...");
-				request(song.url, function(err, res, body) {
-					if (err) {
-						log('request error: ' + err);
+					var song = response.song;
+					if (!song) {
+						log("no song with id " + songId);
 						return cb(null);
 					}
-					var $ = cheerio.load(body);
-					// var lyrics = $('.lyrics').text().replace(/\[[^\]]*\]/g, '').replace('\n', '');
-					var lyrics = $('.lyrics').text();
 
-					app.db.models.Song.create({
-						title: song.title,
-						songId: song.id,
-						artistName: song.primary_artist.name,
-						artistId: song.primary_artist.id,
-						songLyrics: lyrics,
-						releaseDate: song.releaseDate,
-						albumId: song.album ? song.album.id : null
-					}, function(err, song) {
+					// scrape lyrics
+					log("scraping lyrics...");
+					request(song.url, function(err, res, body) {
+
 						if (err) {
-							log('mongo error: ' + err);
+							log('request error: ' + err);
 							return cb(null);
 						}
 
-						// return the new song
-						log('added song with id ' + songId + ' to cache');
-						cb(song);
+						var $ = cheerio.load(body);
+						var lyrics = $('.lyrics').text();
+
+						app.db.models.Song.create({
+							title: song.title,
+							songId: song.id,
+							artistName: song.primary_artist.name,
+							artistId: song.primary_artist.id,
+							songLyrics: lyrics,
+							releaseDate: song.releaseDate,
+							albumId: song.album ? song.album.id : null
+						}, function(err, song) {
+							if (err) {
+								log('mongo error: ' + err);
+								return cb(null);
+							}
+
+							// return the new song
+							log('added song with id ' + songId + ' to cache');
+							cb(song);
+						});
 					});
-				});
+				}
 			});
 		});
 	},
