@@ -1,8 +1,8 @@
 import sys, json, nltk, string, argparse
 from nltk import ngrams
 
-min_ngram = 3 # minimum word string to search for
-max_ngram = 6 # maximum word string to search for
+min_ngram = 4 # minimum word string to search for
+max_ngram = 5 # maximum word string to search for
 ngram_lists = [i+min_ngram for i in xrange(max_ngram-min_ngram+1)] # array of ngram lengths
 
 parser = argparse.ArgumentParser()
@@ -55,13 +55,15 @@ Takes an array of strings
 '''
 def process_songs(songs):
 
-	# TODO: input should be like this:
-	# first song (index = 0) is song to compare
-	# all other songs are indexed at their id + 1
-	# (excluding the song to compare) - that element should be = ''
+	# first song in array = song to compare
+	# every other song in array is indexed by its Genius Song ID
+	# (except for the song to compare, which is removed from its original index)
 
 	try:
+		if type(songs) is not list:
+			songs = songs.split('" "')
 		song = songs.pop(0)
+
 		lyrics = process_lyrics(song)
 		matches = []
 

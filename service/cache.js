@@ -43,6 +43,7 @@ var cache = {
 			for (var i = 0; i < songs.length; i++) {
 				console.log(songs[i].title + ' by ' + songs[i].artistName);
 			}
+			console.log('found ' + songs.length + ' songs');
 		});
 	},
 
@@ -77,7 +78,17 @@ var cache = {
 				var response = JSON.parse(body).response;
 				if (!response) {
 					log("no song with id " + songId);
-					return cb(null);
+
+					// create an empty model for the song with the given id
+					app.db.models.Song.create({
+						title: '',
+						songId: songId
+					}, function(err, song) {
+						if (err) {
+							log('mongo error: ' + err);
+						}
+						return cb(null);
+					});
 				}
 
 				var song = response.song;

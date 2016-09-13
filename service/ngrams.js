@@ -10,11 +10,11 @@ var ngrams =  {
 		this.sendData(lyrics, 'lyrics', function(data) {
 			console.log(data);
 		});
-	}
+	},
 
 	getSongs: function(songs, cb) {
 		this.sendData(songs, 'songs', function(data) {
-			console.log(data);
+			cb(data);
 		});
 	},
 
@@ -28,7 +28,6 @@ var ngrams =  {
 			dataString += data.toString();
 		});
 		py.stdout.on('end', function() {
-			// console.log('END');
 			cb(dataString);
 		});
 		py.stdin.write(JSON.stringify(data));

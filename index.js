@@ -122,7 +122,7 @@ app.server.listen(app.config.port, function() {
 		engine.processLyrics(app, cache, 1);
 	}
 
-	if (arvs.ls) {
-		engine.processSongs(app, cache, [1,2,3,4])
+	if (argv.k) {
+		engine.processSongs(app, cache, 1)
 	}
 });
