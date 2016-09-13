@@ -11,6 +11,21 @@ var cache = {
 
 	// TODO: check date created and update song if X amount of time has elapsed
 
+	testConnection: function(app) {
+		request(buildUrl(app, 'songs', 1), function(err, response, body) {
+			if (err) {
+				console.log('request error:' + err);
+			}
+			
+			response = JSON.parse(body).response;
+			if (!response) {
+				console.log('no response received')
+			} else {
+				console.log('connected successfully');
+			}
+		});
+	},
+
 	reset: function(app, cb) {
 		app.db.models.Song.remove({}, function(err) {
 			if (err) {

@@ -93,6 +93,8 @@ app.server.listen(app.config.port, function() {
 	console.log('App listening on port ' + config.port);
 	fs.writeFile(__dirname + '/start.log', 'started');
 
+	cache.testConnection(app);
+
 	// fetch songs
 	if (argv.f) {
 		var from = argv.f,
@@ -100,7 +102,7 @@ app.server.listen(app.config.port, function() {
 		console.log("fetch songs from " + from + " to " + to);
 		cache.fetchSongs(app, from, to);
 	}
-	
+
 	// reset cache
 	/*if (argv.r) {
 		cache.reset(app);
